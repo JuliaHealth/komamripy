@@ -7,11 +7,11 @@ Pulseq-compatible, high-performance MRI simulation in Python.
 ## Why komamripy?
 
 ```python
-import komamripy as koma
+import komamripy as km
 
-sys = koma.Scanner()
-obj = koma.brain_2dphantom()
-seq = koma.PulseDesigner.EPI_example()
+sys = km.Scanner()
+obj = km.brain_2dphantom()
+seq = km.PulseDesigner.EPI_example()
 
-raw = koma.simulate(obj, seq, sys)
+raw = km.simulate(obj, seq, sys)
 ```
