@@ -29,6 +29,7 @@ Install by using [uv](https://docs.astral.sh/uv/) (recommended) or pip (remove u
 
 ```bash
 uv pip install git+https://github.com/JuliaHealth/komamripy
+```
 
 The first import downloads Julia and precompiles KomaMRI, which can take a few
 minutes. Subsequent runs are fast.
