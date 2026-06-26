@@ -39,14 +39,6 @@ def __getattr__(name):
     defined or imported in this module takes precedence, and the Julia session
     starts lazily on the first real attribute access.
 
-    Resolution is attempted in two stages:
-
-    1. direct attribute access on the Julia ``Main`` module, then
-    2. ``seval(name)``, which resolves the name using Julia's own scope rules.
-
-    The second stage reliably reaches subpackage names brought into scope by
-    ``using KomaMRI`` (for example ``KomaMRICore`` and ``PulseDesigner``).
-
     Note: any Python-side helper submodule added in future must be imported
     explicitly in this file, otherwise the mirror would shadow it whenever its
     name also exists in Julia (Julia's Base exports ``diff``, for instance).
@@ -59,12 +51,7 @@ def __getattr__(name):
 
     try:
         return getattr(jl, name)
-    except Exception:
-        pass
-
-    try:
-        return jl.seval(name)
-    except Exception as exc:
+    except AttributeError as exc:
         raise AttributeError(
             f"module 'komamripy' has no attribute '{name}'; "
             "KomaMRI does not expose it"

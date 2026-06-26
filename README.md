@@ -14,13 +14,6 @@ Python users can run fast CPU/GPU MRI simulations without writing any Julia.
 KomaMRI exposes is available as an attribute of `komamripy`. Julia code
 therefore translates to Python almost line for line.
 
-| Julia | Python |
-| --- | --- |
-| `Scanner()` | `km.Scanner()` |
-| `brain_phantom2D()` | `km.brain_phantom2D()` |
-| `PulseDesigner.EPI_example()` | `km.PulseDesigner.EPI_example()` |
-| `simulate(obj, seq, sys; sim_params)` | `km.simulate(obj, seq, sys, sim_params=sim_params)` |
-
 Simulation results are returned as Julia objects; convert array-like results to
 NumPy with `numpy.asarray`.
 
@@ -29,20 +22,13 @@ NumPy with `numpy.asarray`.
 > `komamripy` is in early development and is not yet on PyPI. Install it from
 > source.
 
-You do **not** need to install Julia yourself: juliacall provisions a suitable
+You do **not** need to install Julia yourself: `juliacall` provisions a suitable
 Julia automatically, and KomaMRI is installed on first import.
 
-Using [uv](https://docs.astral.sh/uv/):
+Install by using [uv](https://docs.astral.sh/uv/) (recommended) or pip (remove uv):
 
 ```bash
 uv pip install git+https://github.com/JuliaHealth/komamripy
-```
-
-Or with pip:
-
-```bash
-pip install git+https://github.com/JuliaHealth/komamripy
-```
 
 The first import downloads Julia and precompiles KomaMRI, which can take a few
 minutes. Subsequent runs are fast.
@@ -60,7 +46,9 @@ seq = km.PulseDesigner.EPI_example()     # example EPI sequence
 sim_params = km.KomaMRICore.default_sim_params()
 sim_params["return_type"] = "mat"        # return the raw signal matrix
 
-signal = np.asarray(km.simulate(obj, seq, sys, sim_params=sim_params))
+raw = km.simulate(obj, seq, sys, sim_params=sim_params)
+signal = np.asarray(raw)
+
 print(signal.shape)
 ```
 
@@ -83,12 +71,3 @@ raw = km.simulate(obj, seq, sys)
 Currently supported: the core simulation pipeline and reading Pulseq files.
 Planned: PyPI releases, GPU backend selection, tighter pypulseq integration,
 and differentiable workflows.
-
-## License
-
-[MIT](LICENSE)
-
-## Acknowledgements
-
-Powered by [KomaMRI.jl](https://github.com/JuliaHealth/KomaMRI.jl) and developed
-within the [JuliaHealth](https://github.com/JuliaHealth) community.
