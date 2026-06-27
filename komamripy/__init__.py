@@ -27,6 +27,7 @@ Python::
 Simulation results are returned as Julia objects; use ``numpy.asarray`` to
 convert array-like results (such as a ``"mat"`` signal) into NumPy arrays.
 """
+
 from ._session import get_julia
 
 __version__ = "0.0.1"
@@ -53,6 +54,5 @@ def __getattr__(name):
         return getattr(jl, name)
     except AttributeError as exc:
         raise AttributeError(
-            f"module 'komamripy' has no attribute '{name}'; "
-            "KomaMRI does not expose it"
+            f"module 'komamripy' has no attribute '{name}'; KomaMRI does not expose it"
         ) from exc

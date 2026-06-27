@@ -4,6 +4,7 @@ Run from the repository root after installing the package (see the README)::
 
     python examples/basic_simulation.py
 """
+
 import numpy as np
 
 import komamripy as km

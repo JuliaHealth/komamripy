@@ -1,0 +1,39 @@
+name: Publish
+
+# Manual release: triggered by pushing a version tag
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  testpypi:
+    name: Publish package to TestPyPI
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      contents: read
+      id-token: write   # required for Trusted Publishing
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build package
+        run: uv build
+
+      - name: Check package metadata
+        run: uv run --with twine python -m twine check dist/*
+
+      - name: Publish package distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/

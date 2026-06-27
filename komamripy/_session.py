@@ -4,6 +4,7 @@ The Julia runtime and KomaMRI are loaded lazily on first use, so importing
 komamripy stays inexpensive until a Julia-backed feature is actually called.
 All access to Julia flows through :func:`get_julia`.
 """
+
 from __future__ import annotations
 
 _session = None  # cached juliacall ``Main`` module, created on first use
@@ -23,6 +24,7 @@ def get_julia():
     global _session
     if _session is None:
         from juliacall import Main as jl
+
         jl.seval("using KomaMRI")
         _session = jl
     return _session
