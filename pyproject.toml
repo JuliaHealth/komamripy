@@ -6,7 +6,7 @@ dynamic = ["version"]
 path = "komamripy/__init__.py"
 description = "Pulseq-compatible, high-performance MRI simulation in Python, powered by KomaMRI.jl."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
