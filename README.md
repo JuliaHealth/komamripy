@@ -19,9 +19,6 @@ NumPy with `numpy.asarray`.
 
 ## Installation
 
-> `komamripy` is in early development and is not yet on PyPI. Install it from
-> source.
-
 You do **not** need to install Julia yourself: `juliacall` provisions a suitable
 Julia automatically, and KomaMRI is installed on first import.
 
