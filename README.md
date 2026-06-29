@@ -8,19 +8,7 @@ Julia framework for MRI simulation. It exposes KomaMRI to Python through
 [juliacall](https://juliapy.github.io/PythonCall.jl/stable/juliacall/), so
 Python users can run fast CPU/GPU MRI simulations without writing any Julia.
 
-## How it works
-
-`komamripy` mirrors the KomaMRI Julia namespace: any function or type that
-KomaMRI exposes is available as an attribute of `komamripy`. Julia code
-therefore translates to Python almost line for line.
-
-Simulation results are returned as Julia objects; convert array-like results to
-NumPy with `numpy.asarray`.
-
 ## Installation
-
-You do **not** need to install Julia yourself: `juliacall` provisions a suitable
-Julia automatically, and KomaMRI is installed on first import.
 
 Install by using [uv](https://docs.astral.sh/uv/) (recommended) or pip (remove uv):
 
@@ -29,7 +17,10 @@ uv pip install git+https://github.com/JuliaHealth/komamripy
 ```
 
 The first import downloads Julia and precompiles KomaMRI, which can take a few
-minutes. Subsequent runs are fast.
+minutes. Subsequent runs are fast.z
+
+You do **not** need to install Julia yourself: `juliacall` provisions a suitable
+Julia automatically, and KomaMRI is installed on first import.
 
 ## Quick start
 
@@ -52,16 +43,14 @@ print(signal.shape)
 
 A runnable version lives in [`examples/`](examples/).
 
-## Pulseq compatibility
+## How it works
 
-KomaMRI reads [Pulseq](https://pulseq.github.io/) `.seq` files, so komamripy can
-simulate sequences produced by any Pulseq tool, including
-[pypulseq](https://github.com/imr-framework/pypulseq):
+`komamripy` mirrors the KomaMRI Julia namespace: any function or type that
+KomaMRI exposes is available as an attribute of `komamripy`. Julia code
+therefore translates to Python almost line for line.
 
-```python
-seq = km.read_seq("sequence.seq")
-raw = km.simulate(obj, seq, sys)
-```
+Simulation results are returned as Julia objects; convert array-like results to
+NumPy with `numpy.asarray`.
 
 ## Status
 
