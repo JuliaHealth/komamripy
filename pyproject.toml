@@ -1,10 +1,14 @@
 [project]
 name = "komamripy"
-version = "0.0.1"
+dynamic = ["version"]
+
+[tool.hatch.version]
+path = "komamripy/__init__.py"
 description = "Pulseq-compatible, high-performance MRI simulation in Python, powered by KomaMRI.jl."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Carlos Castillo Passi", email = "cncastillo@uc.cl" },
     { name = "Anvika Singhal" },
