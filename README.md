@@ -1,14 +1,5 @@
 # komamripy
 
-**Pulseq-compatible, high-performance MRI simulation in Python.**
-
-`komamripy` is a thin Python interface to
-[KomaMRI.jl](https://github.com/JuliaHealth/KomaMRI.jl), a high-performance
-Julia framework for MRI simulation. It exposes KomaMRI to Python through
-[juliacall](https://juliapy.github.io/PythonCall.jl/stable/juliacall/), so
-Python users can run fast CPU/GPU MRI simulations without writing any Julia.
-# komamripy
-
 [![CI](https://github.com/JuliaHealth/komamripy/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JuliaHealth/komamripy/actions/workflows/ci.yml)
 
 **Pulseq-compatible, high-performance MRI simulation in Python.**
