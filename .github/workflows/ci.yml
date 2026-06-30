@@ -21,16 +21,18 @@ jobs:
         run: uv run --group lint ruff format --check .
 
   test:
-    name: Test (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    name: Test (Python ${{ matrix.python-version }} - ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.10", "3.x"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
+        id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -42,8 +44,14 @@ jobs:
           path: ~/.julia
           key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
+      # Pin uv to the interpreter setup-python resolved, so the matrix version
+      # is actually the one tested (otherwise uv may select its own Python).
       - name: Install package and test tools
+        env:
+          UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
         run: uv sync --group test
 
       - name: Run tests
+        env:
+          UV_PYTHON: ${{ steps.setup-python.outputs.python-path }}
         run: uv run --group test pytest -v
