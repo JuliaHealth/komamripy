@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.julia
-          key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
+          key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}-uv
 
       - name: Install package and test tools
         run: uv sync --group test --python ${{ matrix.python-version }}
