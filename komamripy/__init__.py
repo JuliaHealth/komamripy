@@ -30,8 +30,6 @@ convert array-like results (such as a ``"mat"`` signal) into NumPy arrays.
 
 from ._session import get_julia
 
-__version__ = "0.0.1"
-
 
 def __getattr__(name):
     """Resolve attribute access against the Julia session (the KomaMRI mirror).
