@@ -1,9 +1,7 @@
 [project]
 name = "komamripy"
-dynamic = ["version"]
+version = "0.0.1"
 
-[tool.hatch.version]
-path = "komamripy/__init__.py"
 description = "Pulseq-compatible, high-performance MRI simulation in Python, powered by KomaMRI.jl."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -44,3 +42,6 @@ packages = ["komamripy"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "B", "UP"]
+
+[tool.hatch.version]
+path = "komamripy/__init__.py"
