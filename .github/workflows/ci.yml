@@ -16,9 +16,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - name: Ruff lint
-        run: uvx ruff check .
+        run: uv run --group lint ruff check .
       - name: Ruff format check
-        run: uvx ruff format --check .
+        run: uv run --group lint ruff format --check .
 
   test:
     name: Test (Python ${{ matrix.python-version }})
@@ -36,18 +36,14 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
 
-      # Cache the Julia depot (downloaded Julia + KomaMRI + precompiled cache)
-      # so only the first run on a given juliapkg.json pays the full cost.
       - name: Cache Julia depot
         uses: actions/cache@v4
         with:
           path: ~/.julia
           key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
-      # numpy and pytest are not runtime dependencies of the package; they are
-      # only needed to run the example and tests, so install them directly here.
       - name: Install package and test tools
-        run: uv pip install --system -e . pytest numpy
+        run: uv sync --group test
 
       - name: Run tests
-        run: pytest -v
+        run: uv run --group test pytest -v
