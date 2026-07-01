@@ -9,10 +9,10 @@ on:
       - "v*"
 
 jobs:
-  testpypi:
-    name: Publish package to TestPyPI
+  pypi:
+    name: Publish package to PyPI
     runs-on: ubuntu-latest
-    environment: testpypi
+    environment: pypi
     permissions:
       contents: read
       id-token: write   # required for Trusted Publishing
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
@@ -34,7 +34,5 @@ jobs:
       - name: Check package metadata
         run: uv run --with twine python -m twine check dist/*
 
-      - name: Publish package distributions to TestPyPI
+      - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
