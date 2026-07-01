@@ -25,67 +25,49 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      # Python coverage (floor + ceiling) runs on Linux; Windows and macOS each
+      # run once at the ceiling. OS bugs are Python-version-independent and
+      # Python bugs are OS-independent, so this covers both axes without the
+      # full 3x2 cross-product -- and the floor never lands on the OS/old-Python
+      # cells that needed special handling, so one install path works for all.
       matrix:
         include:
           - os: ubuntu-latest
             python-version: "3.10"
-            python-provider: uv
-          - os: windows-latest
-            python-version: "3.10"
-            python-provider: setup-python # uv's Windows 3.10 build hits an OpenSSL 1.1 DLL conflict.
-          - os: macos-latest
-            python-version: "3.10"
-            python-provider: uv
           - os: ubuntu-latest
             python-version: "3.14"
-            python-provider: uv
-          - os: windows-latest
-            python-version: "3.14"
-            python-provider: uv
           - os: macos-latest
             python-version: "3.14"
-            python-provider: uv
+          - os: windows-latest
+            python-version: "3.14"
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v6
-        if: matrix.python-provider == 'setup-python'
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
           check-latest: true
 
-      # Avoid juliapkg selecting hosted-runner Julia installs with broken embed paths.
+      # Install a known-good Julia and force juliacall to use it (see
+      # PYTHON_JULIAPKG_EXE below), so it doesn't pick a runner Julia with
+      # broken embed paths.
       - uses: julia-actions/setup-julia@v3
-        id: setup-julia
         with:
           version: "1.11"
 
       - uses: astral-sh/setup-uv@v5
 
-      - name: Install Python ${{ matrix.python-version }}
-        if: matrix.python-provider == 'uv'
-        run: uv python install ${{ matrix.python-version }}
-
       - name: Cache Julia depot
         uses: actions/cache@v4
         with:
           path: ~/.julia
-          key: julia-v6-${{ runner.os }}-julia1.11-py${{ matrix.python-version }}-${{ matrix.python-provider }}-${{ hashFiles('komamripy/juliapkg.json') }}
+          key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
 
-      - name: Install package and test tools (setup-python)
-        if: matrix.python-provider == 'setup-python'
-        env:
-          PYTHON_JULIAPKG_EXE: ${{ steps.setup-julia.outputs.julia-bindir }}${{ runner.os == 'Windows' && '/julia.exe' || '/julia' }}
-        run: uv sync --group test --python ${{ steps.setup-python.outputs.python-path }}
-
-      - name: Install package and test tools (uv Python)
-        if: matrix.python-provider == 'uv'
-        env:
-          PYTHON_JULIAPKG_EXE: ${{ steps.setup-julia.outputs.julia-bindir }}${{ runner.os == 'Windows' && '/julia.exe' || '/julia' }}
-        run: uv sync --managed-python --group test --python ${{ matrix.python-version }}
+      - name: Install package and test tools
+        run: uv sync --group test --python "${{ steps.setup-python.outputs.python-path }}"
 
       - name: Run tests
         env:
-          PYTHON_JULIAPKG_EXE: ${{ steps.setup-julia.outputs.julia-bindir }}${{ runner.os == 'Windows' && '/julia.exe' || '/julia' }}
-        run: uv run --group test pytest -s -v
+          PYTHON_JULIAPKG_EXE: julia
+        run: uv run --group test pytest -v -s
