@@ -53,6 +53,7 @@ jobs:
       # PYTHON_JULIAPKG_EXE below), so it doesn't pick a runner Julia with
       # broken embed paths.
       - uses: julia-actions/setup-julia@v3
+        id: setup-julia
         with:
           version: "1.11"
 
@@ -69,5 +70,7 @@ jobs:
 
       - name: Run tests
         env:
-          PYTHON_JULIAPKG_EXE: julia
+          # Point juliacall at the Julia installed above by its bindir, so it
+          # uses that exact Julia rather than selecting a runner one.
+          PYTHON_JULIACALL_BINDIR: ${{ steps.setup-julia.outputs.julia-bindir }}
         run: uv run --group test pytest -v -s
