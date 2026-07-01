@@ -12,14 +12,25 @@ Python users can run fast CPU/GPU MRI simulations without writing any Julia.
 
 ## Installation
 
-Install by using [uv](https://docs.astral.sh/uv/) (recommended) or pip (remove uv):
+Install from PyPI with [uv](https://docs.astral.sh/uv/) (recommended):
 
 ```bash
-uv pip install git+https://github.com/JuliaHealth/komamripy
+uv init project-folder
+cd project-folder
+uv add komamripy
+```
+
+or with pip:
+
+```bash
+pip install komamripy
 ```
 
 You do **not** need to install Julia yourself: `juliacall` provisions a suitable
 Julia automatically, and KomaMRI is installed on first import.
+
+The examples additionally use NumPy (`pip install numpy`), which is not a runtime
+dependency of `komamripy` itself.
 
 ## Quick start
 
@@ -60,5 +71,5 @@ NumPy with `numpy.asarray`.
 
 Currently supported: the core simulation pipeline and reading Pulseq files.
 
-Planned: PyPI releases, GPU backend selection, tighter pypulseq integration,
-and differentiable workflows.
+Planned: GPU backend selection, tighter pypulseq integration, and differentiable
+workflows.
