@@ -13,8 +13,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - name: Ruff lint
         run: uv run --group lint ruff check .
       - name: Ruff format check
@@ -41,7 +41,7 @@ jobs:
           - os: windows-latest
             python-version: "3.14"
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v6
         id: setup-python
@@ -49,18 +49,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
           check-latest: true
 
-      # Install a known-good Julia and force juliacall to use it (see
-      # PYTHON_JULIAPKG_EXE below), so it doesn't pick a runner Julia with
-      # broken embed paths.
-      - uses: julia-actions/setup-julia@v3
-        id: setup-julia
-        with:
-          version: "1.11"
-
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@v5
 
       - name: Cache Julia depot
-        uses: actions/cache@v6
+        uses: actions/cache@v4
         with:
           path: ~/.julia
           key: julia-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('komamripy/juliapkg.json') }}
@@ -68,9 +60,7 @@ jobs:
       - name: Install package and test tools
         run: uv sync --group test --python "${{ steps.setup-python.outputs.python-path }}"
 
+      # Julia is now selected by the "julia" pin in komamripy/juliapkg.json;
+      # juliacall installs a matching Julia itself. No setup-julia / env forcing.
       - name: Run tests
-        env:
-          # Point juliapkg at the Julia installed above (full exe path, so
-          # juliacall can derive its bindir), instead of selecting a runner one.
-          PYTHON_JULIAPKG_EXE: ${{ steps.setup-julia.outputs.julia-bindir }}${{ runner.os == 'Windows' && '\julia.exe' || '/julia' }}
         run: uv run --group test pytest -v -s
