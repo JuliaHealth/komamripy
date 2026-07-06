@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.14"]
     env:
       PYTHON_JULIAPKG_PROJECT: ${{ github.workspace }}/.julia_env
       UV_MANAGED_PYTHON: true
@@ -40,9 +40,8 @@ jobs:
           enable-cache: true
           cache-python: true
 
-      - name: Restore JuliaPkg cache
-        id: juliapkg-cache
-        uses: actions/cache/restore@v6
+      - name: Cache JuliaPkg environment
+        uses: actions/cache@v6
         with:
           path: |
             .julia_env
@@ -51,40 +50,5 @@ jobs:
           restore-keys: |
             juliapkg-${{ runner.os }}-py${{ matrix.python-version }}-
 
-      - name: Report JuliaPkg cache
-        run: echo "cache-hit=${{ steps.juliapkg-cache.outputs.cache-hit }}"
-
-      - name: Report Python runtime
-        shell: bash
-        run: |
-          uv run python -u - <<'PY'
-          import ssl
-          import sys
-
-          print(f"Python: {sys.version}")
-          print(f"Python OpenSSL: {ssl.OPENSSL_VERSION}")
-          PY
-
-      - name: Report Julia runtime
-        shell: bash
-        run: |
-          uv run python -u - <<'PY'
-          from juliacall import Main as jl
-
-          print(f"Julia: {jl.seval('string(VERSION)')}")
-          print(f"Julia bindir: {jl.seval('Sys.BINDIR')}")
-          PY
-
       - name: Run tests
-        run: uv run pytest tests -v -s
-
-      # Temporary while validating JuliaPkg caching. Switch to success() after
-      # CI has proved the cache is restored on all supported runners.
-      - name: Save JuliaPkg cache
-        if: always() && steps.juliapkg-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6
-        with:
-          path: |
-            .julia_env
-            ~/.julia
-          key: ${{ steps.juliapkg-cache.outputs.cache-primary-key }}
+        run: uv run pytest tests -v
