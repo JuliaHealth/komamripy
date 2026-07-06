@@ -25,7 +25,6 @@ def main():
     # Step 1: Create a custom 2-tissue phantom from scratch
     print("\n[Step 1] Creating a custom 2-tissue phantom...")
 
-    # Define a simple 2D region with two tissue types
     x_coords = np.linspace(-2.5e-3, 2.5e-3, 6)
     y_coords = np.linspace(-2.5e-3, 2.5e-3, 6)
     xx, yy = np.meshgrid(x_coords, y_coords)
@@ -34,7 +33,6 @@ def main():
     y = yy.ravel()
     z = np.zeros_like(x)
 
-    # Two tissue regions: left = white matter, right = gray matter
     is_white_matter = x < 0
     is_gray_matter = ~is_white_matter
 
@@ -43,7 +41,6 @@ def main():
     T2 = np.where(is_white_matter, 80e-3, 100e-3)
     T2s = T2.copy()
 
-    # Filter zero-density spins
     mask = rho != 0
     x_nz = x[mask]
     y_nz = y[mask]
@@ -53,7 +50,7 @@ def main():
     T2_nz = T2[mask]
     T2s_nz = T2s[mask]
 
-    # Construct Phantom using keyword arguments
+    # Construct Phantom - use rho, not ρ
     phantom_custom = km.Phantom(
         name="custom_tissue",
         x=x_nz,
@@ -88,9 +85,8 @@ def main():
         print(f"    phantom loaded: '{phantom_loaded.name}'")
         print(f"    num spins: {len(phantom_loaded.x)}")
 
-        # Verify coordinates match
         orig_spins = set(zip(x_nz, y_nz, z_nz))
-        load_spins = set(zip(phantom_loaded.x, phantom_loaded.y, phantom_loaded.z))
+        load_spins = set(zip(np.asarray(phantom_loaded.x), np.asarray(phantom_loaded.y), np.asarray(phantom_loaded.z)))
 
         if orig_spins == load_spins:
             print("    spin positions match (round-trip validated)")
@@ -102,29 +98,36 @@ def main():
 
         phantom_brain = km.brain_phantom2D()
 
-        # Scale custom phantom to avoid overlap
-        x_scaled = phantom_loaded.x * 0.2
-        y_scaled = (phantom_loaded.y + 10e-3) * 0.2
-        z_scaled = phantom_loaded.z * 0.2
+        # Convert Julia arrays to numpy for arithmetic
+        x_loaded = np.asarray(phantom_loaded.x)
+        y_loaded = np.asarray(phantom_loaded.y)
+        z_loaded = np.asarray(phantom_loaded.z)
+        rho_loaded = np.asarray(phantom_loaded.ρ)
+        T1_loaded = np.asarray(phantom_loaded.T1)
+        T2_loaded = np.asarray(phantom_loaded.T2)
+        T2s_loaded = np.asarray(phantom_loaded.T2s)
+
+        x_scaled = x_loaded * 0.2
+        y_scaled = (y_loaded + 10e-3) * 0.2
+        z_scaled = z_loaded * 0.2
 
         phantom_custom_scaled = km.Phantom(
             name="custom_tissue_scaled",
             x=x_scaled,
             y=y_scaled,
             z=z_scaled,
-            ρ=phantom_loaded.ρ,
-            T1=phantom_loaded.T1,
-            T2=phantom_loaded.T2,
-            T2s=phantom_loaded.T2s,
+            ρ=rho_loaded,
+            T1=T1_loaded,
+            T2=T2_loaded,
+            T2s=T2s_loaded,
         )
 
-        # Combine using + operator
         phantom_combined = phantom_brain + phantom_custom_scaled
 
         print(f"    combined phantom: '{phantom_combined.name}'")
-        print(f"    total spins: {len(phantom_combined.x)}")
-        print(f"    - from brain: {len(phantom_brain.x)}")
-        print(f"    - from custom: {len(phantom_custom_scaled.x)}")
+        print(f"    total spins: {len(np.asarray(phantom_combined.x))}")
+        print(f"    - from brain: {len(np.asarray(phantom_brain.x))}")
+        print(f"    - from custom: {len(np.asarray(phantom_custom_scaled.x))}")
 
         # Step 5: Simulate with custom phantom
         print("\n[Step 5] Simulating with custom phantom...")
