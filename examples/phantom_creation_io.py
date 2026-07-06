@@ -1,3 +1,18 @@
+"""Phantom creation and I/O workflow.
+
+Demonstrates:
+1. Creating a custom 2-tissue phantom from spin position arrays
+2. Saving to .phantom HDF5 file format
+3. Loading from .phantom file
+4. Combining multiple phantoms using addition
+5. Simulating with custom phantoms
+
+Run from the repository root after installing the package::
+
+    python examples/phantom_creation_io.py
+"""
+
+
 import tempfile
 from pathlib import Path
 import numpy as np
