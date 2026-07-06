@@ -1,3 +1,18 @@
+"""Phantom motion during acquisition and artifact simulation.
+
+Demonstrates:
+1. Loading a phantom and attaching rigid body motion
+2. Simulating with motion (observing artifacts)
+3. Motion-corrected reconstruction
+4. Saving motion-laden phantom to .phantom file
+
+Based on KomaMRI tutorial gen-05-SimpleMotion.
+
+Run from the repository root after installing the package::
+
+    python examples/motion_simulation.py
+"""
+
 import tempfile
 from pathlib import Path
 import numpy as np
