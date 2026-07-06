@@ -21,7 +21,7 @@ Python::
     sys = km.Scanner()
     obj = km.brain_phantom2D()
     seq = km.PulseDesigner.EPI_example()
-    sim_params = km.KomaMRICore.default_sim_params()
+    sim_params = km.core.default_sim_params()
     raw = km.simulate(obj, seq, sys, sim_params=sim_params)
 
 Simulation results are returned as Julia objects; use ``numpy.asarray`` to
@@ -29,6 +29,13 @@ convert array-like results (such as a ``"mat"`` signal) into NumPy arrays.
 """
 
 from ._session import get_julia
+
+_JULIA_MODULE_ALIASES = {
+    "base": "KomaMRIBase",
+    "core": "KomaMRICore",
+    "files": "KomaMRIFiles",
+    "plots": "KomaMRIPlots",
+}
 
 
 def __getattr__(name):
@@ -48,8 +55,10 @@ def __getattr__(name):
 
     jl = get_julia()
 
+    target = _JULIA_MODULE_ALIASES.get(name, name)
+
     try:
-        return getattr(jl, name)
+        return getattr(jl, target)
     except AttributeError as exc:
         raise AttributeError(
             f"module 'komamripy' has no attribute '{name}'; KomaMRI does not expose it"

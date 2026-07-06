@@ -20,19 +20,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.14"
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Build package
+      - name: Build
         run: uv build
 
-      - name: Check package metadata
-        run: uv run --with twine python -m twine check dist/*
+      - name: Smoke test (wheel)
+        run: uv run --isolated --no-project --with dist/*.whl tests/smoke_test.py
 
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Smoke test (source distribution)
+        run: uv run --isolated --no-project --with dist/*.tar.gz tests/smoke_test.py
+
+      - name: Publish
+        run: uv publish

@@ -4,7 +4,7 @@ version = "0.0.4"
 
 description = "Pulseq-compatible, high-performance MRI simulation in Python, powered by KomaMRI.jl."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
@@ -18,9 +18,7 @@ keywords = ["MRI", "simulation", "Pulseq", "KomaMRI", "Julia", "medical-imaging"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -39,18 +37,14 @@ Repository = "https://github.com/JuliaHealth/komamripy"
 Issues = "https://github.com/JuliaHealth/komamripy/issues"
 
 [dependency-groups]
-test = ["pytest", "numpy"]
-lint = ["ruff"]
+dev = ["pytest", "numpy", "ruff"]
+
+[tool.uv]
+required-version = ">=0.11,<0.12"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["komamripy"]
+requires = ["uv_build>=0.11.26,<0.12"]
+build-backend = "uv_build"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "B", "UP"]
-
-[tool.hatch.version]
-path = "komamripy/__init__.py"
