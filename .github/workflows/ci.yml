@@ -62,7 +62,20 @@ jobs:
       - name: Report JuliaPkg cache
         run: echo "cache-hit=${{ steps.juliapkg-cache.outputs.cache-hit }}"
 
-      # Julia is now selected by the "julia" pin in komamripy/juliapkg.json;
-      # juliacall installs a matching Julia itself. No setup-julia / env forcing.
+      - name: Report runtime versions
+        run: |
+          uv run python - <<'PY'
+          import ssl
+          import sys
+
+          print(f"Python: {sys.version}")
+          print(f"Python OpenSSL: {ssl.OPENSSL_VERSION}")
+
+          from juliacall import Main as jl
+
+          print(f"Julia: {jl.seval('string(VERSION)')}")
+          print(f"Julia bindir: {jl.seval('Sys.BINDIR')}")
+          PY
+
       - name: Run tests
         run: uv run pytest tests -v -s
