@@ -53,16 +53,16 @@ def main():
     T2_nz = T2[mask]
     T2s_nz = T2s[mask]
 
-    # Construct Phantom using positional arguments
+    # Construct Phantom using keyword arguments
     phantom_custom = km.Phantom(
-        "custom_tissue",
-        x_nz,
-        y_nz,
-        z_nz,
-        rho_nz,
-        T1_nz,
-        T2_nz,
-        T2s_nz,
+        name="custom_tissue",
+        x=x_nz,
+        y=y_nz,
+        z=z_nz,
+        ρ=rho_nz,
+        T1=T1_nz,
+        T2=T2_nz,
+        T2s=T2s_nz,
     )
 
     print(f"    phantom created: '{phantom_custom.name}'")
@@ -108,14 +108,14 @@ def main():
         z_scaled = phantom_loaded.z * 0.2
 
         phantom_custom_scaled = km.Phantom(
-            "custom_tissue_scaled",
-            x_scaled,
-            y_scaled,
-            z_scaled,
-            phantom_loaded.rho,
-            phantom_loaded.T1,
-            phantom_loaded.T2,
-            phantom_loaded.T2s,
+            name="custom_tissue_scaled",
+            x=x_scaled,
+            y=y_scaled,
+            z=z_scaled,
+            ρ=phantom_loaded.ρ,
+            T1=phantom_loaded.T1,
+            T2=phantom_loaded.T2,
+            T2s=phantom_loaded.T2s,
         )
 
         # Combine using + operator

@@ -27,19 +27,8 @@ def main():
     # Define scanner hardware limits
     sys = km.Scanner()
 
-    # Sequence parameters (SI units unless otherwise noted)
-    flip_angle = 15  # degrees; converted internally in PulseDesigner
-    TE = 8e-3  # 8 ms
-    TR = 22e-3  # 22 ms
-    FOV = 256e-3  # 256 mm
-    N_readout = 128  # readout points
-    N_phase = 64  # phase-encoding lines (reduced for speed)
-
     # Build a basic GRE sequence using PulseDesigner
-    # PulseDesigner.GRE_example() is a quick shortcut; here we use the minimal
-    # approach from KomaMRI tutorials for clarity.
-    # For simplicity in this example, we use a pre-built example:
-    seq = km.PulseDesigner.GRE_example()
+    seq = km.PulseDesigner.EPI_example()
 
     print(f"    sequence created: {seq.DEF.get('Name', 'unnamed')}")
     print(f"    num blocks: {len(seq.blocks)}")
@@ -52,8 +41,6 @@ def main():
         seq_path = Path(tmpdir) / "example_gre.seq"
 
         # Write the sequence using the KomaMRIFiles API
-        # Syntax: km.files.write_seq(seq, path; sys=scanner)
-        # Note: sys provides hardware limit checks and Pulseq raster alignment
         km.files.write_seq(seq, str(seq_path), sys=sys)
 
         print(f"    sequence written to: {seq_path}")
@@ -77,9 +64,7 @@ def main():
         sim_params_orig["return_type"] = "mat"
 
         signal_original = km.simulate(obj, seq, sys, sim_params=sim_params_orig)
-        signal_readback = km.simulate(
-            obj, seq_read, sys, sim_params=sim_params_orig
-        )
+        signal_readback = km.simulate(obj, seq_read, sys, sim_params=sim_params_orig)
 
         # Convert to numpy for comparison
         signal_orig_np = np.asarray(signal_original)
@@ -89,9 +74,7 @@ def main():
         print(f"    read-back signal shape: {signal_read_np.shape}")
 
         # Compute error (should be tiny; numerical precision differences only)
-        error = np.linalg.norm(
-            signal_orig_np - signal_read_np
-        ) / np.linalg.norm(signal_orig_np)
+        error = np.linalg.norm(signal_orig_np - signal_read_np) / np.linalg.norm(signal_orig_np)
         print(f"    relative difference: {error:.2e}")
 
         if error < 1e-6:
@@ -99,6 +82,7 @@ def main():
         else:
             print("  ⚠ signals differ; inspect for sequence parameter changes")
 
+    print("\nExample 1 complete")
 
 
 if __name__ == "__main__":
