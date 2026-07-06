@@ -47,9 +47,9 @@ jobs:
           enable-cache: true
           cache-python: true
 
-      - name: Cache JuliaPkg environment
+      - name: Restore JuliaPkg cache
         id: juliapkg-cache
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: |
             .julia_env
@@ -57,20 +57,25 @@ jobs:
           key: juliapkg-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'src/komamripy/juliapkg.json') }}
           restore-keys: |
             juliapkg-${{ runner.os }}-py${{ matrix.python-version }}-
-          save-always: true
 
       - name: Report JuliaPkg cache
         run: echo "cache-hit=${{ steps.juliapkg-cache.outputs.cache-hit }}"
 
-      - name: Report runtime versions
+      - name: Report Python runtime
+        shell: bash
         run: |
-          uv run python - <<'PY'
+          uv run python -u - <<'PY'
           import ssl
           import sys
 
           print(f"Python: {sys.version}")
           print(f"Python OpenSSL: {ssl.OPENSSL_VERSION}")
+          PY
 
+      - name: Report Julia runtime
+        shell: bash
+        run: |
+          uv run python -u - <<'PY'
           from juliacall import Main as jl
 
           print(f"Julia: {jl.seval('string(VERSION)')}")
@@ -79,3 +84,14 @@ jobs:
 
       - name: Run tests
         run: uv run pytest tests -v -s
+
+      # Temporary while validating JuliaPkg caching. Switch to success() after
+      # CI has proved the cache is restored on all supported runners.
+      - name: Save JuliaPkg cache
+        if: always() && steps.juliapkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            .julia_env
+            ~/.julia
+          key: ${{ steps.juliapkg-cache.outputs.cache-primary-key }}
