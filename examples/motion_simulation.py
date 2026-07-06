@@ -34,13 +34,9 @@ def main():
     print("\n[Step 2] Defining and attaching translation motion...")
 
     # Translation: 2 cm in x direction over 200 ms (0.1 m/s)
-    # Syntax: km.translate(dx, dy, dz, km.TimeRange(t_start, t_end))
-    motion = km.translate(
-        dx=2e-2,  # 2 cm in x
-        dy=0.0,   # no y motion
-        dz=0.0,   # no z motion
-        time_range=km.TimeRange(t_start=0.0, t_end=200e-3),
-    )
+    # Use positional arguments: translate(dx, dy, dz, time_range)
+    time_range = km.TimeRange(t_start=0.0, t_end=200e-3)
+    motion = km.translate(2e-2, 0.0, 0.0, time_range)
 
     # Assign motion to phantom
     obj.motion = motion
@@ -54,7 +50,7 @@ def main():
     sys = km.Scanner()
     seq = km.PulseDesigner.EPI_example()
 
-    # Get sequence timing info (sum of block durations)
+    # Get sequence timing info
     seq_duration = sum(seq.DUR) if hasattr(seq, 'DUR') and seq.DUR else 0.0
     print(f"  - sequence duration: {seq_duration*1e3:.2f} ms")
     print(f"  - motion duration: 200 ms")
@@ -62,7 +58,7 @@ def main():
     sim_params = km.core.default_sim_params()
     sim_params["return_type"] = "mat"
 
-    # Simulate with motion (motion artifacts expected)
+    # Simulate with motion
     print("\n  Simulating WITH motion...")
     signal_with_motion = km.simulate(obj, seq, sys, sim_params=sim_params)
     signal_with_motion_np = np.asarray(signal_with_motion)
@@ -86,26 +82,21 @@ def main():
     else:
         print("  ⚠ minimal motion artifact; verify acquisition duration")
 
-    # Step 4: Motion-corrected reconstruction (phase correction)
+    # Step 4: Motion-corrected reconstruction
     print("\n[Step 4] Motion-corrected reconstruction...")
 
     # Re-apply motion
-    motion = km.translate(
-        dx=2e-2, dy=0.0, dz=0.0,
-        time_range=km.TimeRange(t_start=0.0, t_end=200e-3),
-    )
+    time_range = km.TimeRange(t_start=0.0, t_end=200e-3)
+    motion = km.translate(2e-2, 0.0, 0.0, time_range)
     obj.motion = motion
 
     try:
-        # Get ADC sampling times from sequence
         sample_times = km.get_adc_sampling_times(seq)
         print(f"    adc sampling times retrieved: {len(sample_times)} samples")
 
-        # Get spin displacements at each sample time
-        # Syntax: km.get_spin_coords(motion, x, y, z, times)
         displacements = km.get_spin_coords(
             obj.motion, 
-            [0.0], [0.0], [0.0],  # reference position
+            [0.0], [0.0], [0.0],
             sample_times
         )
         print(f"    displacements computed: {np.asarray(displacements).shape}")
@@ -120,8 +111,6 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         phantom_path = Path(tmpdir) / "brain_with_motion.phantom"
 
-        # Syntax: km.files.write_phantom(phantom, path)
-        # Motion is persisted as part of the phantom structure
         km.files.write_phantom(obj, str(phantom_path))
 
         print(f"    phantom saved to: {phantom_path}")
