@@ -12,7 +12,7 @@ def test_epi_simulation_returns_signal():
     obj = km.brain_phantom2D()
     seq = km.PulseDesigner.EPI_example()
 
-    sim_params = km.KomaMRICore.default_sim_params()
+    sim_params = km.core.default_sim_params()
     sim_params["return_type"] = "mat"
 
     signal = np.asarray(km.simulate(obj, seq, sys, sim_params=sim_params))
