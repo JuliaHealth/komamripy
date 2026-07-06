@@ -29,7 +29,27 @@ jobs:
         run: uv build
 
       - name: Check package metadata
-        run: uv run --with twine python -m twine check dist/*
+        run: uv run --isolated --no-project --with twine python -m twine check dist/*
+
+      - name: Smoke test wheel
+        run: |
+          uv run --isolated --no-project --with dist/*.whl python - <<'PY'
+          import importlib.resources as resources
+          import komamripy
+
+          assert (resources.files("komamripy") / "juliapkg.json").is_file()
+          assert komamripy.__file__
+          PY
+
+      - name: Smoke test source distribution
+        run: |
+          uv run --isolated --no-project --with dist/*.tar.gz python - <<'PY'
+          import importlib.resources as resources
+          import komamripy
+
+          assert (resources.files("komamripy") / "juliapkg.json").is_file()
+          assert komamripy.__file__
+          PY
 
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        run: uv publish
