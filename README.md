@@ -68,7 +68,5 @@ NumPy with `numpy.asarray`.
 
 `komamripy` is under active development as a Google Summer of Code project.
 
-Currently supported: the core simulation pipeline and reading Pulseq files.
-
-Planned: GPU backend selection, tighter pypulseq integration, and differentiable
-workflows.
+Project status and roadmap are tracked in
+[JuliaHealth/komamripy#9](https://github.com/JuliaHealth/komamripy/issues/9).
