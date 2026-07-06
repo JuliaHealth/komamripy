@@ -1,3 +1,16 @@
+"""Pulseq sequence read/write workflow.
+
+Demonstrates:
+1. Creating a simple GRE sequence in KomaMRI using PulseDesigner
+2. Writing it to standard Pulseq .seq format
+3. Reading it back and simulating
+4. Verifying round-trip compatibility
+
+Run from the repository root after installing the package::
+
+    python examples/pulseq_workflow.py
+"""
+
 import tempfile
 from pathlib import Path
 import numpy as np
