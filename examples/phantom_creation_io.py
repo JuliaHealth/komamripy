@@ -12,7 +12,6 @@ Run from the repository root after installing the package::
     python examples/phantom_creation_io.py
 """
 
-
 import tempfile
 from pathlib import Path
 import numpy as np
@@ -27,32 +26,24 @@ def main():
     print("\n[Step 1] Creating a custom 2-tissue phantom...")
 
     # Define a simple 2D region with two tissue types
-    # We'll create a 5 mm × 5 mm grid with 1 mm spacing
-    x_coords = np.linspace(-2.5e-3, 2.5e-3, 6)  # x: -2.5 to 2.5 mm
-    y_coords = np.linspace(-2.5e-3, 2.5e-3, 6)  # y: -2.5 to 2.5 mm
+    x_coords = np.linspace(-2.5e-3, 2.5e-3, 6)
+    y_coords = np.linspace(-2.5e-3, 2.5e-3, 6)
     xx, yy = np.meshgrid(x_coords, y_coords)
 
-    # Flatten for Phantom constructor
     x = xx.ravel()
     y = yy.ravel()
-    z = np.zeros_like(x)  # 2D phantom (z=0)
+    z = np.zeros_like(x)
 
-    # Create two tissue regions by spatial partitioning
-    # Region 1: left half (x < 0) — white matter
-    # Region 2: right half (x >= 0) — gray matter
+    # Two tissue regions: left = white matter, right = gray matter
     is_white_matter = x < 0
     is_gray_matter = ~is_white_matter
-
-    # Define tissue properties (T1, T2 in seconds; ρ normalized)
-    # White matter: ρ=0.7, T1=0.8s, T2=0.080s
-    # Gray matter:  ρ=0.9, T1=1.3s, T2=0.100s
 
     rho = np.where(is_white_matter, 0.7, 0.9)
     T1 = np.where(is_white_matter, 0.8, 1.3)
     T2 = np.where(is_white_matter, 80e-3, 100e-3)
-    T2s = T2.copy()  # For simplicity
+    T2s = T2.copy()
 
-    # Remove spins with zero density (none in this case, but good practice)
+    # Filter zero-density spins
     mask = rho != 0
     x_nz = x[mask]
     y_nz = y[mask]
@@ -62,16 +53,16 @@ def main():
     T2_nz = T2[mask]
     T2s_nz = T2s[mask]
 
-    # Construct the Phantom object
+    # Construct Phantom using positional arguments
     phantom_custom = km.Phantom(
-        name="custom_tissue",
-        x=x_nz,
-        y=y_nz,
-        z=z_nz,
-        rho=rho_nz,
-        T1=T1_nz,
-        T2=T2_nz,
-        T2s=T2s_nz,
+        "custom_tissue",
+        x_nz,
+        y_nz,
+        z_nz,
+        rho_nz,
+        T1_nz,
+        T2_nz,
+        T2s_nz,
     )
 
     print(f"    phantom created: '{phantom_custom.name}'")
@@ -84,7 +75,6 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         phantom_path = Path(tmpdir) / "custom_tissue.phantom"
 
-        # Syntax: km.files.write_phantom(phantom, path)
         km.files.write_phantom(phantom_custom, str(phantom_path))
 
         print(f"    phantom saved to: {phantom_path}")
@@ -93,13 +83,12 @@ def main():
         # Step 3: Load phantom from .phantom file
         print("\n[Step 3] Loading phantom from .phantom file...")
 
-        # Syntax: km.files.read_phantom(path)
         phantom_loaded = km.files.read_phantom(str(phantom_path))
 
         print(f"    phantom loaded: '{phantom_loaded.name}'")
         print(f"    num spins: {len(phantom_loaded.x)}")
 
-        # Verify that loaded phantom matches original
+        # Verify coordinates match
         orig_spins = set(zip(x_nz, y_nz, z_nz))
         load_spins = set(zip(phantom_loaded.x, phantom_loaded.y, phantom_loaded.z))
 
@@ -111,26 +100,25 @@ def main():
         # Step 4: Combine phantoms using addition
         print("\n[Step 4] Combining phantoms...")
 
-        # Load a built-in phantom
         phantom_brain = km.brain_phantom2D()
 
-        # Scale the custom phantom to avoid overlap
-        x_scaled = phantom_loaded.x * 0.2  # shrink to 20% of original
-        y_scaled = (phantom_loaded.y + 10e-3) * 0.2  # shift up and scale
+        # Scale custom phantom to avoid overlap
+        x_scaled = phantom_loaded.x * 0.2
+        y_scaled = (phantom_loaded.y + 10e-3) * 0.2
         z_scaled = phantom_loaded.z * 0.2
 
         phantom_custom_scaled = km.Phantom(
-            name="custom_tissue_scaled",
-            x=x_scaled,
-            y=y_scaled,
-            z=z_scaled,
-            rho=phantom_loaded.rho,
-            T1=phantom_loaded.T1,
-            T2=phantom_loaded.T2,
-            T2s=phantom_loaded.T2s,
+            "custom_tissue_scaled",
+            x_scaled,
+            y_scaled,
+            z_scaled,
+            phantom_loaded.rho,
+            phantom_loaded.T1,
+            phantom_loaded.T2,
+            phantom_loaded.T2s,
         )
 
-        # Combine using the + operator
+        # Combine using + operator
         phantom_combined = phantom_brain + phantom_custom_scaled
 
         print(f"    combined phantom: '{phantom_combined.name}'")
@@ -151,9 +139,9 @@ def main():
         signal_np = np.asarray(signal)
 
         print(f"    signal acquired: shape {signal_np.shape}")
-        print(f"    signal magnitude range: [{np.min(np.abs(signal_np)):.2e}, "
-              f"{np.max(np.abs(signal_np)):.2e}]")
+        print(f"    signal magnitude range: [{np.min(np.abs(signal_np)):.2e}, {np.max(np.abs(signal_np)):.2e}]")
 
+    print("\nExample 2 complete")
 
 
 if __name__ == "__main__":
