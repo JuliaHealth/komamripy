@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 
 import komamripy as km
-from pypulseq import Sequence, make_block_pulse, make_trapezoid, make_adc
+from pypulseq import Sequence, Opts, make_block_pulse, make_trapezoid, make_adc
 
 
 def main():
@@ -25,20 +25,33 @@ def main():
     # Step 1: Create a simple sequence with pypulseq
     print("\n[Step 1] Creating a simple sequence with pypulseq...")
 
-    seq = Sequence()
+    # Use a PyPulseq system matching Koma's scanner timing
+    system = Opts(
+        max_grad=60, grad_unit="mT/m",
+        max_slew=500, slew_unit="T/m/s",
+        rf_dead_time=100e-6,
+        rf_ringdown_time=20e-6,
+        adc_dead_time=10e-6,
+        adc_raster_time=2e-6,
+        block_duration_raster=10e-6,
+        grad_raster_time=10e-6,
+        rf_raster_time=1e-6,
+    )
+    
+    seq = Sequence(system=system)
     
     # Define sequence parameters
     fov = 256e-3  # 256 mm
     n_x = 64      # readout points
     
-    # Simple block RF pulse (90 degree flip)
-    rf = make_block_pulse(flip_angle=90, duration=1e-3, freq_offset=0)
+    # Simple block RF pulse (90 degree flip in radians)
+    rf = make_block_pulse(flip_angle=np.pi / 2, duration=1e-3, freq_offset=0, delay=100e-6, system=system)
     
     # Readout gradient
-    gx = make_trapezoid(channel='x', flat_area=n_x/fov, flat_time=3e-3)
+    gx = make_trapezoid(channel="x", flat_area=n_x / fov, flat_time=3.1e-3, system=system)
     
     # ADC (readout)
-    adc = make_adc(num_samples=n_x, duration=3e-3)
+    adc = make_adc(num_samples=n_x, dwell=48e-6, delay=24e-6, system=system)
     
     # Add blocks to sequence
     seq.add_block(rf)
