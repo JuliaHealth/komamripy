@@ -4,7 +4,7 @@ Demonstrates:
 1. Creating a simple GRE sequence with pypulseq
 2. Writing it to .seq format
 3. Reading it back with KomaMRI
-4. Verulating round-trip compatibility by simulating both
+4. Verifying round-trip compatibility by simulating both
 
 Run from the repository root after installing the package::
 
@@ -16,24 +16,14 @@ from pathlib import Path
 import numpy as np
 
 import komamripy as km
-
-try:
-    from pypulseq.Sequence.sequence import Sequence
-    from pypulseq.Pulse.pulse_defs import make_sinc_pulse
-    from pypulseq.Grad.grad_defs import make_trapezoid
-    from pypulseq.ADC.adc_defs import make_adc
-    PYPULSEQ_AVAILABLE = True
-except ImportError:
-    PYPULSEQ_AVAILABLE = False
+from pypulseq.Sequence.sequence import Sequence
+from pypulseq.Pulse.pulse_defs import make_sinc_pulse
+from pypulseq.Grad.grad_defs import make_trapezoid
+from pypulseq.ADC.adc_defs import make_adc
 
 
 def main():
     print("\nEXAMPLE 4: Pulseq I/O Workflow (Read/Write)\n")
-
-    if not PYPULSEQ_AVAILABLE:
-        print("  ⚠ pypulseq not available; skipping sequence creation")
-        print("    (install with: pip install pypulseq)")
-        return
 
     # Step 1: Create a simple GRE sequence with pypulseq
     print("\n[Step 1] Creating a simple GRE sequence with pypulseq...")
