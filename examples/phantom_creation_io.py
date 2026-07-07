@@ -14,6 +14,7 @@ Run from the repository root after installing the package::
 
 import tempfile
 from pathlib import Path
+
 import numpy as np
 
 import komamripy as km
@@ -34,7 +35,6 @@ def main():
     z = np.zeros_like(x)
 
     is_white_matter = x < 0
-    is_gray_matter = ~is_white_matter
 
     rho = np.where(is_white_matter, 0.7, 0.9)
     T1 = np.where(is_white_matter, 0.8, 1.3)
@@ -50,7 +50,7 @@ def main():
     T2_nz = T2[mask]
     T2s_nz = T2s[mask]
 
-    # Construct Phantom - use rho, not ρ
+    # Construct Phantom using Greek letter ρ
     phantom_custom = km.Phantom(
         name="custom_tissue",
         x=x_nz,
@@ -64,7 +64,7 @@ def main():
 
     print(f"    phantom created: '{phantom_custom.name}'")
     print(f"    num spins: {len(x_nz)}")
-    print(f"    tissue types: white matter (x<0), gray matter (x≥0)")
+    print("    tissue types: white matter (x<0), gray matter (x≥0)")
 
     # Step 2: Save phantom to .phantom file
     print("\n[Step 2] Saving phantom to .phantom file...")
@@ -85,8 +85,13 @@ def main():
         print(f"    phantom loaded: '{phantom_loaded.name}'")
         print(f"    num spins: {len(phantom_loaded.x)}")
 
-        orig_spins = set(zip(x_nz, y_nz, z_nz))
-        load_spins = set(zip(np.asarray(phantom_loaded.x), np.asarray(phantom_loaded.y), np.asarray(phantom_loaded.z)))
+        x_loaded = np.asarray(phantom_loaded.x)
+        y_loaded = np.asarray(phantom_loaded.y)
+        z_loaded = np.asarray(phantom_loaded.z)
+        orig_spins = set(zip(x_nz, y_nz, z_nz, strict=False))
+        load_spins = set(
+            zip(x_loaded, y_loaded, z_loaded, strict=False)
+        )
 
         if orig_spins == load_spins:
             print("    spin positions match (round-trip validated)")
@@ -99,9 +104,6 @@ def main():
         phantom_brain = km.brain_phantom2D()
 
         # Convert Julia arrays to numpy for arithmetic
-        x_loaded = np.asarray(phantom_loaded.x)
-        y_loaded = np.asarray(phantom_loaded.y)
-        z_loaded = np.asarray(phantom_loaded.z)
         rho_loaded = np.asarray(phantom_loaded.ρ)
         T1_loaded = np.asarray(phantom_loaded.T1)
         T2_loaded = np.asarray(phantom_loaded.T2)
@@ -125,9 +127,12 @@ def main():
         phantom_combined = phantom_brain + phantom_custom_scaled
 
         print(f"    combined phantom: '{phantom_combined.name}'")
-        print(f"    total spins: {len(np.asarray(phantom_combined.x))}")
-        print(f"    - from brain: {len(np.asarray(phantom_brain.x))}")
-        print(f"    - from custom: {len(np.asarray(phantom_custom_scaled.x))}")
+        combined_x = len(np.asarray(phantom_combined.x))
+        brain_x = len(np.asarray(phantom_brain.x))
+        custom_x = len(np.asarray(phantom_custom_scaled.x))
+        print(f"    total spins: {combined_x}")
+        print(f"    - from brain: {brain_x}")
+        print(f"    - from custom: {custom_x}")
 
         # Step 5: Simulate with custom phantom
         print("\n[Step 5] Simulating with custom phantom...")
@@ -142,7 +147,9 @@ def main():
         signal_np = np.asarray(signal)
 
         print(f"    signal acquired: shape {signal_np.shape}")
-        print(f"    signal magnitude range: [{np.min(np.abs(signal_np)):.2e}, {np.max(np.abs(signal_np)):.2e}]")
+        mag_min = np.min(np.abs(signal_np))
+        mag_max = np.max(np.abs(signal_np))
+        print(f"    signal magnitude range: [{mag_min:.2e}, {mag_max:.2e}]")
 
     print("\nExample 2 complete")
 

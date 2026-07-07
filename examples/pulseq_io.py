@@ -13,6 +13,7 @@ Run from the repository root after installing the package::
 
 import tempfile
 from pathlib import Path
+
 import numpy as np
 
 import komamripy as km
@@ -37,32 +38,40 @@ def main():
         grad_raster_time=10e-6,
         rf_raster_time=1e-6,
     )
-    
+
     seq = Sequence(system=system)
-    
+
     # Define sequence parameters
     fov = 256e-3  # 256 mm
     n_x = 64      # readout points
-    
+
     # Simple block RF pulse (90 degree flip in radians)
-    rf = make_block_pulse(flip_angle=np.pi / 2, duration=1e-3, freq_offset=0, delay=100e-6, system=system)
-    
+    rf = make_block_pulse(
+        flip_angle=np.pi / 2, duration=1e-3, freq_offset=0,
+        delay=100e-6, system=system
+    )
+
     # Readout gradient
-    gx = make_trapezoid(channel="x", flat_area=n_x / fov, flat_time=3.1e-3, system=system)
-    
+    gx = make_trapezoid(
+        channel="x", flat_area=n_x / fov, flat_time=3.1e-3,
+        system=system
+    )
+
     # ADC (readout)
-    adc = make_adc(num_samples=n_x, dwell=48e-6, delay=24e-6, system=system)
-    
+    adc = make_adc(
+        num_samples=n_x, dwell=48e-6, delay=24e-6, system=system
+    )
+
     # Add blocks to sequence
     seq.add_block(rf)
     seq.add_block(gx, adc)
-    
+
     # Write to temporary file
     with tempfile.TemporaryDirectory() as tmpdir:
         seq_path = Path(tmpdir) / "simple_pypulseq.seq"
-        
+
         seq.write(str(seq_path))
-        print(f"    sequence created with pypulseq")
+        print("    sequence created with pypulseq")
         print(f"    written to: {seq_path}")
         print(f"    file size: {seq_path.stat().st_size} bytes")
 
@@ -70,7 +79,7 @@ def main():
         print("\n[Step 2] Reading .seq file with KomaMRI...")
 
         seq_koma = km.files.read_seq(str(seq_path))
-        print(f"    sequence read successfully")
+        print("    sequence read successfully")
         print(f"    duration: {sum(seq_koma.DUR)*1e3:.2f} ms")
 
         # Step 3: Write back with KomaMRI
@@ -78,21 +87,25 @@ def main():
 
         seq_path_out = Path(tmpdir) / "simple_koma_roundtrip.seq"
         sys = km.Scanner()
-        
+
         try:
             km.files.write_seq(seq_koma, str(seq_path_out), sys=sys)
-            print(f"    sequence written back successfully")
+            print("    sequence written back successfully")
             print(f"    file size: {seq_path_out.stat().st_size} bytes")
         except Exception as e:
             print(f"  ⚠ write_seq failed: {type(e).__name__}")
-            print(f"    (this is expected if sequence timing is incompatible with KomaMRI)")
+            msg = (
+                "    (this is expected if sequence timing is "
+                "incompatible with KomaMRI)"
+            )
+            print(msg)
             return
 
         # Step 4: Verify by reading and simulating
         print("\n[Step 4] Verifying round-trip compatibility...")
 
         seq_verify = km.files.read_seq(str(seq_path_out))
-        print(f"    re-read successfully")
+        print("    re-read successfully")
 
         obj = km.brain_phantom2D()
         sim_params = km.core.default_sim_params()
@@ -102,7 +115,9 @@ def main():
         signal_np = np.asarray(signal)
 
         print(f"    simulation completed: signal shape {signal_np.shape}")
-        print(f"    signal magnitude range: [{np.min(np.abs(signal_np)):.2e}, {np.max(np.abs(signal_np)):.2e}]")
+        mag_min = np.min(np.abs(signal_np))
+        mag_max = np.max(np.abs(signal_np))
+        print(f"    signal magnitude range: [{mag_min:.2e}, {mag_max:.2e}]")
 
         if signal_np.size > 0 and np.max(np.abs(signal_np)) > 0:
             print("    ✓ round-trip I/O validated")

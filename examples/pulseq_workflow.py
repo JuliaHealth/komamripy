@@ -24,7 +24,7 @@ def main():
     sys = km.Scanner()
     seq = km.PulseDesigner.EPI_example()
 
-    print(f"    sequence created")
+    print("    sequence created")
     print(f"    sequence duration: {sum(seq.DUR)*1e3:.2f} ms")
 
     # Step 2: Load phantom and simulation parameters
@@ -43,7 +43,9 @@ def main():
     signal_np = np.asarray(signal)
 
     print(f"    signal acquired: shape {signal_np.shape}")
-    print(f"    signal magnitude range: [{np.min(np.abs(signal_np)):.2e}, {np.max(np.abs(signal_np)):.2e}]")
+    mag_min = np.min(np.abs(signal_np))
+    mag_max = np.max(np.abs(signal_np))
+    print(f"    signal magnitude range: [{mag_min:.2e}, {mag_max:.2e}]")
 
     # Step 4: Verify signal properties
     print("\n[Step 4] Verifying signal properties...")
