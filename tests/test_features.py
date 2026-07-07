@@ -1,6 +1,6 @@
 """Integration tests: verify examples run without errors.
 
-Tests that the three main examples (pulseq_workflow, phantom_creation_io, 
+Tests that the four main examples (pulseq_workflow, pulseq_io, phantom_creation_io, 
 motion_simulation) execute successfully from start to finish.
 """
 
@@ -11,12 +11,10 @@ from io import StringIO
 
 def test_pulseq_workflow_runs():
     """pulseq_workflow example should run without errors."""
-    # Dynamically import the module
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
     try:
         import pulseq_workflow
         
-        # Capture output
         old_stdout = sys.stdout
         sys.stdout = StringIO()
         
@@ -26,8 +24,33 @@ def test_pulseq_workflow_runs():
         finally:
             sys.stdout = old_stdout
         
-        # Verify key output markers
         assert "EXAMPLE 1" in output, "Missing 'EXAMPLE 1' marker"
+        assert "Step 1" in output, "Missing 'Step 1'"
+        assert "Step 2" in output, "Missing 'Step 2'"
+        assert "Step 3" in output, "Missing 'Step 3'"
+        assert "Step 4" in output, "Missing 'Step 4'"
+        assert "complete" in output.lower(), "Missing 'complete' marker"
+        
+    finally:
+        sys.path.pop(0)
+
+
+def test_pulseq_io_runs():
+    """pulseq_io example should run without errors."""
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
+    try:
+        import pulseq_io
+        
+        old_stdout = sys.stdout
+        sys.stdout = StringIO()
+        
+        try:
+            pulseq_io.main()
+            output = sys.stdout.getvalue()
+        finally:
+            sys.stdout = old_stdout
+        
+        assert "EXAMPLE 4" in output, "Missing 'EXAMPLE 4' marker"
         assert "Step 1" in output, "Missing 'Step 1'"
         assert "Step 2" in output, "Missing 'Step 2'"
         assert "Step 3" in output, "Missing 'Step 3'"
