@@ -35,12 +35,12 @@ def main():
     print("\n[Step 2] Defining and attaching translation motion...")
 
     # Translation: 2 cm in x direction over 200 ms (0.1 m/s)
-    # Syntax: km.translate(dx, dy, dz, km.TimeRange(t_start, t_end))
+    # Syntax: km.translate(dx, dy, dz, time_range)
     motion = km.translate(
-        dx=2e-2,  # 2 cm in x
-        dy=0.0,  # no y motion
-        dz=0.0,  # no z motion
-        time_range=km.TimeRange(t_start=0.0, t_end=200e-3),
+        2e-2,  # 2 cm in x
+        0.0,  # no y motion
+        0.0,  # no z motion
+        km.TimeRange(t_start=0.0, t_end=200e-3),
     )
 
     # Assign motion to phantom
@@ -92,10 +92,10 @@ def main():
 
     # Re-apply motion
     motion = km.translate(
-        dx=2e-2,
-        dy=0.0,
-        dz=0.0,
-        time_range=km.TimeRange(t_start=0.0, t_end=200e-3),
+        2e-2,
+        0.0,
+        0.0,
+        km.TimeRange(t_start=0.0, t_end=200e-3),
     )
     obj.motion = motion
 
