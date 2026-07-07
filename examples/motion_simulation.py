@@ -38,8 +38,8 @@ def main():
     # Syntax: km.translate(dx, dy, dz, km.TimeRange(t_start, t_end))
     motion = km.translate(
         dx=2e-2,  # 2 cm in x
-        dy=0.0,   # no y motion
-        dz=0.0,   # no z motion
+        dy=0.0,  # no y motion
+        dz=0.0,  # no z motion
         time_range=km.TimeRange(t_start=0.0, t_end=200e-3),
     )
 
@@ -56,8 +56,8 @@ def main():
     seq = km.PulseDesigner.EPI_example()
 
     # Get sequence timing info (sum of block durations)
-    seq_duration = sum(seq.DUR) if hasattr(seq, 'DUR') and seq.DUR else 0.0
-    print(f"  - sequence duration: {seq_duration*1e3:.2f} ms")
+    seq_duration = sum(seq.DUR) if hasattr(seq, "DUR") and seq.DUR else 0.0
+    print(f"  - sequence duration: {seq_duration * 1e3:.2f} ms")
     print("  - motion duration: 200 ms")
 
     sim_params = km.core.default_sim_params()
@@ -92,7 +92,9 @@ def main():
 
     # Re-apply motion
     motion = km.translate(
-        dx=2e-2, dy=0.0, dz=0.0,
+        dx=2e-2,
+        dy=0.0,
+        dz=0.0,
         time_range=km.TimeRange(t_start=0.0, t_end=200e-3),
     )
     obj.motion = motion
@@ -106,8 +108,10 @@ def main():
         # Syntax: km.get_spin_coords(motion, x, y, z, times)
         displacements = km.get_spin_coords(
             obj.motion,
-            [0.0], [0.0], [0.0],  # reference position
-            sample_times
+            [0.0],
+            [0.0],
+            [0.0],  # reference position
+            sample_times,
         )
         print(f"    displacements computed: {np.asarray(displacements).shape}")
         print("    motion-corrected reconstruction principle validated")

@@ -28,8 +28,10 @@ def main():
 
     # Use a PyPulseq system matching Koma's scanner timing
     system = Opts(
-        max_grad=60, grad_unit="mT/m",
-        max_slew=500, slew_unit="T/m/s",
+        max_grad=60,
+        grad_unit="mT/m",
+        max_slew=500,
+        slew_unit="T/m/s",
         rf_dead_time=100e-6,
         rf_ringdown_time=20e-6,
         adc_dead_time=10e-6,
@@ -43,24 +45,20 @@ def main():
 
     # Define sequence parameters
     fov = 256e-3  # 256 mm
-    n_x = 64      # readout points
+    n_x = 64  # readout points
 
     # Simple block RF pulse (90 degree flip in radians)
     rf = make_block_pulse(
-        flip_angle=np.pi / 2, duration=1e-3, freq_offset=0,
-        delay=100e-6, system=system
+        flip_angle=np.pi / 2, duration=1e-3, freq_offset=0, delay=100e-6, system=system
     )
 
     # Readout gradient
     gx = make_trapezoid(
-        channel="x", flat_area=n_x / fov, flat_time=3.1e-3,
-        system=system
+        channel="x", flat_area=n_x / fov, flat_time=3.1e-3, system=system
     )
 
     # ADC (readout)
-    adc = make_adc(
-        num_samples=n_x, dwell=48e-6, delay=24e-6, system=system
-    )
+    adc = make_adc(num_samples=n_x, dwell=48e-6, delay=24e-6, system=system)
 
     # Add blocks to sequence
     seq.add_block(rf)
@@ -80,7 +78,7 @@ def main():
 
         seq_koma = km.files.read_seq(str(seq_path))
         print("    sequence read successfully")
-        print(f"    duration: {sum(seq_koma.DUR)*1e3:.2f} ms")
+        print(f"    duration: {sum(seq_koma.DUR) * 1e3:.2f} ms")
 
         # Step 3: Write back with KomaMRI
         print("\n[Step 3] Writing .seq file back with KomaMRI...")
@@ -95,8 +93,7 @@ def main():
         except Exception as e:
             print(f"  ⚠ write_seq failed: {type(e).__name__}")
             msg = (
-                "    (this is expected if sequence timing is "
-                "incompatible with KomaMRI)"
+                "    (this is expected if sequence timing is incompatible with KomaMRI)"
             )
             print(msg)
             return

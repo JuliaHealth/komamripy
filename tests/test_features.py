@@ -12,7 +12,7 @@ from io import StringIO
 
 def test_pulseq_workflow_runs():
     """pulseq_workflow example should run without errors."""
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "examples"))
     try:
         import pulseq_workflow
 
@@ -38,7 +38,7 @@ def test_pulseq_workflow_runs():
 
 def test_pulseq_io_runs():
     """pulseq_io example should run without errors."""
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "examples"))
     try:
         import pulseq_io
 
@@ -64,7 +64,7 @@ def test_pulseq_io_runs():
 
 def test_phantom_creation_io_runs():
     """phantom_creation_io example should run without errors."""
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "examples"))
     try:
         import phantom_creation_io
 
@@ -91,7 +91,7 @@ def test_phantom_creation_io_runs():
 
 def test_motion_simulation_runs():
     """motion_simulation example should run without errors."""
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'examples'))
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "examples"))
     try:
         import motion_simulation
 

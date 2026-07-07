@@ -25,7 +25,7 @@ def main():
     seq = km.PulseDesigner.EPI_example()
 
     print("    sequence created")
-    print(f"    sequence duration: {sum(seq.DUR)*1e3:.2f} ms")
+    print(f"    sequence duration: {sum(seq.DUR) * 1e3:.2f} ms")
 
     # Step 2: Load phantom and simulation parameters
     print("\n[Step 2] Loading phantom and setting up simulation...")

@@ -89,9 +89,7 @@ def main():
         y_loaded = np.asarray(phantom_loaded.y)
         z_loaded = np.asarray(phantom_loaded.z)
         orig_spins = set(zip(x_nz, y_nz, z_nz, strict=False))
-        load_spins = set(
-            zip(x_loaded, y_loaded, z_loaded, strict=False)
-        )
+        load_spins = set(zip(x_loaded, y_loaded, z_loaded, strict=False))
 
         if orig_spins == load_spins:
             print("    spin positions match (round-trip validated)")
