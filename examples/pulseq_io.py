@@ -15,9 +15,9 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+from pypulseq import Opts, Sequence, make_adc, make_block_pulse, make_trapezoid
 
 import komamripy as km
-from pypulseq import Sequence, Opts, make_block_pulse, make_trapezoid, make_adc
 
 
 def main():
