@@ -16,10 +16,7 @@ from pathlib import Path
 import numpy as np
 
 import komamripy as km
-from pypulseq.Sequence.sequence import Sequence
-from pypulseq.Pulse.pulse_defs import make_sinc_pulse
-from pypulseq.Grad.grad_defs import make_trapezoid
-from pypulseq.ADC.adc_defs import make_adc
+from pypulseq import Sequence, make_sinc_pulse, make_trapezoid, make_adc
 
 
 def main():
