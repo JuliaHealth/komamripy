@@ -37,7 +37,16 @@ Repository = "https://github.com/JuliaHealth/komamripy"
 Issues = "https://github.com/JuliaHealth/komamripy/issues"
 
 [dependency-groups]
-dev = ["pytest", "numpy", "ruff"]
+dev = [
+    "pytest",
+    "numpy",
+    "ruff",
+    "pypulseq",
+    "sigpy>=0.1.27",
+    # SigPy requires numba>=0.66 on Python 3.14.
+    "numba>=0.66",
+    "matplotlib>=3.11.0",
+]
 
 [tool.uv]
 required-version = ">=0.11,<0.12"
@@ -47,4 +56,4 @@ requires = ["uv_build>=0.11.26,<0.12"]
 build-backend = "uv_build"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W", "B", "UP"]
+select = ["E", "F", "I", "B", "UP"]
