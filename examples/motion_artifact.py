@@ -7,7 +7,7 @@ import sigpy as sp
 import komamripy as km
 
 # Define acquisition inputs
-scanner = km.Scanner()
+sys = km.Scanner()
 seq = km.PulseDesigner.EPI_example()
 sim_params = {"return_type": "mat"}
 
@@ -24,9 +24,9 @@ moving_obj.motion = km.translate(
 )
 
 # Simulate with KomaMRI
-signal_without_motion = km.simulate(reference_obj, seq, scanner, sim_params=sim_params)
+signal_without_motion = km.simulate(reference_obj, seq, sys, sim_params=sim_params)
 signal_without_motion = np.asarray(signal_without_motion).reshape(-1)
-signal_with_motion = km.simulate(moving_obj, seq, scanner, sim_params=sim_params)
+signal_with_motion = km.simulate(moving_obj, seq, sys, sim_params=sim_params)
 signal_with_motion = np.asarray(signal_with_motion).reshape(-1)
 
 # Reconstruct with SigPy

@@ -12,8 +12,12 @@ import komamripy as km
 
 # Build a PyPulseq sequence
 system = pp.Opts(
-    max_grad=32, grad_unit="mT/m", max_slew=130, slew_unit="T/m/s",
-    rf_ringdown_time=30e-6, rf_dead_time=100e-6,
+    max_grad=32,
+    grad_unit="mT/m",
+    max_slew=130,
+    slew_unit="T/m/s",
+    rf_ringdown_time=30e-6,
+    rf_dead_time=100e-6,
 )
 seq = pp.Sequence(system=system)
 fov = 220e-3
@@ -21,9 +25,13 @@ matrix_size = 64
 slice_thickness = 3e-3
 delta_k = 1 / fov
 rf, gz, gz_reph = pp.make_sinc_pulse(
-    flip_angle=np.pi / 2, duration=3e-3, slice_thickness=slice_thickness,
+    flip_angle=np.pi / 2,
+    duration=3e-3,
+    slice_thickness=slice_thickness,
     return_gz=True,
-    system=system, delay=system.rf_dead_time, use="excitation",
+    system=system,
+    delay=system.rf_dead_time,
+    use="excitation",
 )
 adc_dwell = 4e-6
 adc_duration = matrix_size * adc_dwell
@@ -59,13 +67,13 @@ with tempfile.TemporaryDirectory() as tmpdir:
     seq_koma = km.files.read_seq(seq_path)
 
 # Define simulation inputs
-scanner = km.Scanner()
+sys = km.Scanner()
 obj = km.brain_phantom2D()
 obj.Δw = np.zeros_like(obj.Δw)  # removes fat off-resonance
 sim_params = {"return_type": "mat"}
 
 # Simulate with KomaMRI
-signal = km.simulate(obj, seq_koma, scanner, sim_params=sim_params)
+signal = km.simulate(obj, seq_koma, sys, sim_params=sim_params)
 signal = np.asarray(signal).reshape(-1)
 
 # Reconstruct with SigPy

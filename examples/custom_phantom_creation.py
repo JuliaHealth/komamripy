@@ -45,12 +45,12 @@ with tempfile.TemporaryDirectory() as tmpdir:
     loaded = km.files.read_phantom(phantom_path)
 
 # Define acquisition inputs
-scanner = km.Scanner()
+sys = km.Scanner()
 seq = km.PulseDesigner.EPI_example()
 sim_params = {"return_type": "mat"}
 
 # Simulate with KomaMRI
-signal = km.simulate(loaded, seq, scanner, sim_params=sim_params)
+signal = km.simulate(loaded, seq, sys, sim_params=sim_params)
 signal = np.asarray(signal).reshape(-1)
 
 # Reconstruct with SigPy

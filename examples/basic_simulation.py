@@ -7,14 +7,14 @@ import sigpy as sp
 import komamripy as km
 
 # Define acquisition inputs
-scanner = km.Scanner()
+sys = km.Scanner()
 obj = km.brain_phantom2D()
 obj.Δw = np.zeros_like(obj.Δw)  # removes fat off-resonance
 seq = km.PulseDesigner.EPI_example()
 
 # Simulate with KomaMRI
 sim_params = {"return_type": "mat"}
-signal = km.simulate(obj, seq, scanner, sim_params=sim_params)
+signal = km.simulate(obj, seq, sys, sim_params=sim_params)
 signal = np.asarray(signal).reshape(-1)
 
 # Reconstruct with SigPy
