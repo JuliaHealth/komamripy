@@ -41,9 +41,7 @@ sys = km.Scanner()                       # scanner hardware
 obj = km.brain_phantom2D()               # 2D brain phantom
 seq = km.PulseDesigner.EPI_example()     # example EPI sequence
 
-sim_params = km.core.default_sim_params()
-sim_params["return_type"] = "mat"        # return the raw signal matrix
-
+sim_params = {"return_type": "mat"}      # return the raw signal matrix
 raw = km.simulate(obj, seq, sys, sim_params=sim_params)
 
 print(np.shape(raw))
@@ -51,9 +49,6 @@ print(np.shape(raw))
 
 You do **not** need to install Julia yourself: `juliacall` provisions a suitable
 Julia automatically, and KomaMRI is installed on first import.
-
-The examples additionally use NumPy (`uv add numpy`, or `pip install numpy`),
-which is not a runtime dependency of `komamripy` itself.
 
 ## How it works
 
