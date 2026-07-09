@@ -47,8 +47,6 @@ jobs:
             .julia_env
             ~/.julia
           key: juliapkg-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'src/komamripy/juliapkg.json') }}
-          # restore-keys: |
-          #   juliapkg-${{ runner.os }}-py${{ matrix.python-version }}-
 
       - name: Run tests
         run: uv run pytest tests -v
