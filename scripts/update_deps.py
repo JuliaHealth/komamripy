@@ -15,7 +15,7 @@ def resolve_julia_versions():
     """
 
     julia_code = """
-import Pkg, JSON, Tempdir
+import Pkg
 specs = [
     Pkg.PackageSpec(name="KomaMRI", uuid="6a340f8b-2cdf-4c04-99be-4953d9b66d0a"),
     Pkg.PackageSpec(name="KomaMRIBase", uuid="d0bc0b20-b151-4d03-b2a4-6ca51751cb9c"),
@@ -29,7 +29,6 @@ mktempdir() do tmpdir
     Pkg.activate(".")
     Pkg.add(specs)
     deps = Pkg.dependencies()
-    versions = Dict()
     for (name, uuid) in [
         ("KomaMRI", "6a340f8b-2cdf-4c04-99be-4953d9b66d0a"),
         ("KomaMRIBase", "d0bc0b20-b151-4d03-b2a4-6ca51751cb9c"),
@@ -37,9 +36,8 @@ mktempdir() do tmpdir
         ("KomaMRIFiles", "fcf631a6-1c7e-4e88-9e64-b8888386d9dc"),
         ("KomaMRIPlots", "76db0263-63f3-4d26-bb9a-5dba378db904"),
     ]
-        versions[name] = string(deps[Base.UUID(uuid)].version)
+        println(name, '\t', deps[Base.UUID(uuid)].version)
     end
-    println(JSON.json(versions))
 end
 """
 
@@ -55,7 +53,7 @@ end
             print(f"Julia resolution failed:\n{result.stderr}", file=sys.stderr)
             sys.exit(1)
 
-        return json.loads(result.stdout.strip())
+        return dict(line.split("\t", 1) for line in result.stdout.splitlines())
     except FileNotFoundError:
         print("Error: Julia not found. Install Julia.", file=sys.stderr)
         sys.exit(1)

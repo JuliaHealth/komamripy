@@ -30,7 +30,6 @@ jobs:
       - name: Run dependency update script
         id: update
         run: python scripts/update_deps.py
-        continue-on-error: true
 
       - name: Check if updates were found
         id: check
