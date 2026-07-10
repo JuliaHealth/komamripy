@@ -13,14 +13,6 @@ def resolve_julia_versions():
     Returns:
         Dict mapping package names to version strings.
     """
-    # Define packages to resolve
-    packages = [
-        ("KomaMRI", "6a340f8b-2cdf-4c04-99be-4953d9b66d0a"),
-        ("KomaMRIBase", "d0bc0b20-b151-4d03-b2a4-6ca51751cb9c"),
-        ("KomaMRICore", "4baa4f4d-2ae9-40db-8331-a7d1080e3f4e"),
-        ("KomaMRIFiles", "fcf631a6-1c7e-4e88-9e64-b8888386d9dc"),
-        ("KomaMRIPlots", "76db0263-63f3-4d26-bb9a-5dba378db904"),
-    ]
     
     julia_code = """
 import Pkg, JSON, Tempdir
@@ -65,7 +57,7 @@ end
         
         return json.loads(result.stdout.strip())
     except FileNotFoundError:
-        print("Error: Julia not found. Install Julia or use --mock-versions.", file=sys.stderr)
+        print("Error: Julia not found. Install Julia.", file=sys.stderr)
         sys.exit(1)
     except subprocess.TimeoutExpired:
         print("Error: Julia resolution timed out (5 min).", file=sys.stderr)
@@ -80,8 +72,15 @@ def compare_versions(current, resolved):
     """
     changes = []
     updated = False
-    
-    for pkg in ["KomaMRI", "KomaMRIBase", "KomaMRICore", "KomaMRIFiles", "KomaMRIPlots"]:
+
+    pkg_names = [
+        "KomaMRI",
+        "KomaMRIBase",
+        "KomaMRICore",
+        "KomaMRIFiles",
+        "KomaMRIPlots",
+    ]
+    for pkg in pkg_names:
         old_version = current["packages"][pkg]["version"].lstrip("=")
         new_version = resolved[pkg]
         
