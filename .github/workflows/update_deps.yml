@@ -63,6 +63,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
+          token: ${{ secrets.AUTOMATION_TOKEN }}
           commit-message: 'chore: update KomaMRI dependencies'
           title: '[auto] Bump to version ${{ steps.version.outputs.version }}'
           body-path: pr_body.txt
@@ -74,5 +75,6 @@ jobs:
         if: steps.check.outputs.changed == 'true'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
+          token: ${{ secrets.AUTOMATION_TOKEN }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
           merge-method: squash

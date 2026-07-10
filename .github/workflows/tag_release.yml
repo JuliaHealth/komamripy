@@ -7,7 +7,12 @@ on:
 
 jobs:
   tag:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, '[auto] Bump to version')
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'update-koma-deps' &&
+      contains(github.event.pull_request.labels.*.name, 'dependencies') &&
+      startsWith(github.event.pull_request.title, '[auto] Bump to version')
     name: Tag and push release
     runs-on: ubuntu-latest
     permissions:
@@ -17,6 +22,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          token: ${{ secrets.AUTOMATION_TOKEN }}
 
       - name: Extract version from pyproject.toml
         id: version
