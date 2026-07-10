@@ -9,11 +9,11 @@ from pathlib import Path
 
 def resolve_julia_versions():
     """Resolve KomaMRI package versions using Julia.
-    
+
     Returns:
         Dict mapping package names to version strings.
     """
-    
+
     julia_code = """
 import Pkg, JSON, Tempdir
 specs = [
@@ -42,7 +42,7 @@ mktempdir() do tmpdir
     println(JSON.json(versions))
 end
 """
-    
+
     try:
         result = subprocess.run(
             ["julia", "-e", julia_code],
@@ -50,11 +50,11 @@ end
             text=True,
             timeout=300,
         )
-        
+
         if result.returncode != 0:
             print(f"Julia resolution failed:\n{result.stderr}", file=sys.stderr)
             sys.exit(1)
-        
+
         return json.loads(result.stdout.strip())
     except FileNotFoundError:
         print("Error: Julia not found. Install Julia.", file=sys.stderr)
@@ -66,7 +66,7 @@ end
 
 def compare_versions(current, resolved):
     """Compare current and resolved versions.
-    
+
     Returns:
         (changes_list, updated_bool, new_python_version)
     """
@@ -83,19 +83,19 @@ def compare_versions(current, resolved):
     for pkg in pkg_names:
         old_version = current["packages"][pkg]["version"].lstrip("=")
         new_version = resolved[pkg]
-        
+
         if old_version != new_version:
             updated = True
             changes.append(f"{pkg}: {old_version} → {new_version}")
             current["packages"][pkg]["version"] = f"={new_version}"
-    
+
     # Bump Python patch version if anything changed
     new_python_version = None
     if updated:
         pyproject_path = Path("pyproject.toml")
         with open(pyproject_path) as f:
             content = f.read()
-        
+
         match = re.search(r'version = "(\d+)\.(\d+)\.(\d+)"', content)
         if match:
             major, minor, patch = match.groups()
@@ -107,7 +107,7 @@ def compare_versions(current, resolved):
             )
             with open(pyproject_path, "w") as f:
                 f.write(content)
-    
+
     return changes, updated, new_python_version
 
 
@@ -116,17 +116,17 @@ def main():
     juliapkg_path = Path("src/komamripy/juliapkg.json")
     with open(juliapkg_path) as f:
         current = json.load(f)
-    
+
     # Resolve Julia versions
     resolved = resolve_julia_versions()
-    
+
     # Compare and update
     changes, updated, new_python_version = compare_versions(current, resolved)
-    
+
     if not updated:
         print("No KomaMRI updates available.")
         return 0
-    
+
     # Print PR info
     print("=" * 60)
     print(f"PR Title: Bump to version {new_python_version}")
@@ -135,15 +135,15 @@ def main():
     for change in changes:
         print(f"  {change}")
     print("=" * 60)
-    
+
     # Write updated juliapkg.json
     with open(juliapkg_path, "w") as f:
         json.dump(current, f, indent=2)
         f.write("\n")  # Add newline at end
-    
+
     print("\n✓ Updated komamripy/juliapkg.json")
     print(f"✓ Bumped version to {new_python_version} in pyproject.toml")
-    
+
     return 0
 
 
