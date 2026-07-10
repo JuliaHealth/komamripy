@@ -16,28 +16,20 @@ def resolve_julia_versions():
 
     julia_code = """
 import Pkg
-specs = [
-    Pkg.PackageSpec(name="KomaMRI", uuid="6a340f8b-2cdf-4c04-99be-4953d9b66d0a"),
-    Pkg.PackageSpec(name="KomaMRIBase", uuid="d0bc0b20-b151-4d03-b2a4-6ca51751cb9c"),
-    Pkg.PackageSpec(name="KomaMRICore", uuid="4baa4f4d-2ae9-40db-8331-a7d1080e3f4e"),
-    Pkg.PackageSpec(name="KomaMRIFiles", uuid="fcf631a6-1c7e-4e88-9e64-b8888386d9dc"),
-    Pkg.PackageSpec(name="KomaMRIPlots", uuid="76db0263-63f3-4d26-bb9a-5dba378db904"),
+names = [
+    "KomaMRI",
+    "KomaMRIBase",
+    "KomaMRICore",
+    "KomaMRIFiles",
+    "KomaMRIPlots",
 ]
 Pkg.Registry.update()
-mktempdir() do tmpdir
-    cd(tmpdir)
-    Pkg.activate(".")
-    Pkg.add(specs)
-    deps = Pkg.dependencies()
-    for (name, uuid) in [
-        ("KomaMRI", "6a340f8b-2cdf-4c04-99be-4953d9b66d0a"),
-        ("KomaMRIBase", "d0bc0b20-b151-4d03-b2a4-6ca51751cb9c"),
-        ("KomaMRICore", "4baa4f4d-2ae9-40db-8331-a7d1080e3f4e"),
-        ("KomaMRIFiles", "fcf631a6-1c7e-4e88-9e64-b8888386d9dc"),
-        ("KomaMRIPlots", "76db0263-63f3-4d26-bb9a-5dba378db904"),
-    ]
-        println(name, '\t', deps[Base.UUID(uuid)].version)
-    end
+Pkg.activate(; temp=true)
+Pkg.add(names)
+
+resolved = Dict(pkg.name => pkg.version for pkg in values(Pkg.dependencies()))
+for name in names
+    println(name, '\t', resolved[name])
 end
 """
 
