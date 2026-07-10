@@ -1,0 +1,71 @@
+name: Update KomaMRI Dependencies
+
+on:
+  schedule:
+    # Run weekly on Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-deps:
+    name: Check and update KomaMRI dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '~1.10'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.14'
+
+      - name: Run dependency update script
+        id: update
+        run: python scripts/update_deps.py
+        continue-on-error: true
+
+      - name: Check if updates were found
+        id: check
+        run: |
+          if git diff --quiet src/komamripy/juliapkg.json pyproject.toml 2>/dev/null; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract version from pyproject.toml
+        if: steps.check.outputs.changed == 'true'
+        id: version
+        run: |
+          VERSION=$(grep '^version = ' pyproject.toml | grep -oP '\d+\.\d+\.\d+')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build PR body with version changes
+        if: steps.check.outputs.changed == 'true'
+        id: pr_body
+        run: |
+          {
+            echo "## Version Changes"
+            echo ""
+            git diff src/komamripy/juliapkg.json | grep -E '^\+.*version|^-.*version' | sed 's/^+/→ /' | sed 's/^-/← /'
+          } > pr_body.txt
+          cat pr_body.txt
+
+      - name: Create pull request
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'chore: update KomaMRI dependencies'
+          title: 'Bump to version ${{ steps.version.outputs.version }}'
+          body-path: pr_body.txt
+          branch: update-koma-deps
+          delete-branch: true
+          labels: 'dependencies'
