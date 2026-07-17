@@ -101,6 +101,15 @@ def compare_versions(current, resolved):
     return changes, updated, new_python_version
 
 
+def format_pr_body(changes):
+    """Format dependency changes for the automated pull request."""
+    lines = ["## Version Changes", ""]
+    for change in changes:
+        package, versions = change.split(": ", 1)
+        lines.append(f"- **{package}**: {versions}")
+    return "\n".join(lines)
+
+
 def main():
     # Read current juliapkg.json
     juliapkg_path = Path("src/komamripy/juliapkg.json")
@@ -120,6 +129,8 @@ def main():
     with open(juliapkg_path, "w") as f:
         json.dump(current, f, indent=2)
         f.write("\n")  # Add newline at end
+
+    print(format_pr_body(changes))
 
     return 0
 
