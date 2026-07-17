@@ -29,7 +29,7 @@ jobs:
 
       - name: Run dependency update script
         id: update
-        run: python scripts/update_deps.py
+        run: python scripts/update_deps.py > "$RUNNER_TEMP/pr_body.txt"
 
       - name: Check if updates were found
         id: check
@@ -47,48 +47,6 @@ jobs:
           VERSION=$(grep '^version = ' pyproject.toml | grep -oP '\d+\.\d+\.\d+')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build PR body with version changes
-        if: steps.check.outputs.changed == 'true'
-        id: pr_body
-        run: |
-          python3 << 'PYTHON_EOF'
-          import json
-          import subprocess
-
-          # Get git diff output
-          result = subprocess.run(
-              ['git', 'diff', 'src/komamripy/juliapkg.json'],
-              capture_output=True,
-              text=True
-          )
-
-          # Parse old and new versions
-          old_versions = {}
-          new_versions = {}
-
-          with open('src/komamripy/juliapkg.json') as f:
-              current = json.load(f)
-              for pkg, info in current['packages'].items():
-                  new_versions[pkg] = info['version'].lstrip('=')
-
-          # Extract old versions from diff
-          for line in result.stdout.split('\n'):
-              if line.startswith('-') and '"version"' in line:
-                  version = line.split('"version": "')[1].rstrip('",').lstrip('=')
-                  for pkg in current['packages']:
-                      if pkg not in old_versions:
-                          old_versions[pkg] = version
-                          break
-
-          # Print changes
-          for pkg in sorted(current['packages'].keys()):
-              old = old_versions.get(pkg, '?')
-              new = new_versions.get(pkg, '?')
-              if old != new:
-                  print(f"- **{pkg}**: {old} → {new}")
-          PYTHON_EOF
-          cat pr_body.txt >> $GITHUB_OUTPUT
-
       - name: Create pull request
         if: steps.check.outputs.changed == 'true'
         id: cpr
@@ -97,7 +55,7 @@ jobs:
           token: ${{ secrets.AUTOMATION_TOKEN }}
           commit-message: 'chore: update KomaMRI dependencies'
           title: '[auto] Bump to version ${{ steps.version.outputs.version }}'
-          body-path: pr_body.txt
+          body-path: ${{ runner.temp }}/pr_body.txt
           branch: update-koma-deps
           delete-branch: true
           labels: 'dependencies'
