@@ -7,15 +7,15 @@
     },
     "KomaMRIBase": {
       "uuid": "d0bc0b20-b151-4d03-b2a4-6ca51751cb9c",
-      "version": "=0.13.3"
+      "version": "=0.13.4"
     },
     "KomaMRICore": {
       "uuid": "4baa4f4d-2ae9-40db-8331-a7d1080e3f4e",
-      "version": "=0.12.1"
+      "version": "=0.12.2"
     },
     "KomaMRIFiles": {
       "uuid": "fcf631a6-1c7e-4e88-9e64-b8888386d9dc",
-      "version": "=0.11.3"
+      "version": "=0.11.4"
     },
     "KomaMRIPlots": {
       "uuid": "76db0263-63f3-4d26-bb9a-5dba378db904",
