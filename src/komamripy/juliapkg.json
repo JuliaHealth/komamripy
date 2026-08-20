@@ -11,7 +11,7 @@
     },
     "KomaMRICore": {
       "uuid": "4baa4f4d-2ae9-40db-8331-a7d1080e3f4e",
-      "version": "=0.12.3"
+      "version": "=0.12.5"
     },
     "KomaMRIFiles": {
       "uuid": "fcf631a6-1c7e-4e88-9e64-b8888386d9dc",
