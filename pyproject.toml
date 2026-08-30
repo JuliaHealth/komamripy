@@ -1,6 +1,6 @@
 [project]
 name = "komamripy"
-version = "0.0.10"
+version = "0.0.11"
 
 description = "Pulseq-compatible, high-performance MRI simulation in Python, powered by KomaMRI.jl."
 readme = "README.md"
