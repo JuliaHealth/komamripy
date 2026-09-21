@@ -38,7 +38,7 @@ end
             ["julia", "-e", julia_code],
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=600,
         )
 
         if result.returncode != 0:
@@ -50,7 +50,7 @@ end
         print("Error: Julia not found. Install Julia.", file=sys.stderr)
         sys.exit(1)
     except subprocess.TimeoutExpired:
-        print("Error: Julia resolution timed out (5 min).", file=sys.stderr)
+        print("Error: Julia resolution timed out (10 min).", file=sys.stderr)
         sys.exit(1)
 
 
