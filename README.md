@@ -1,14 +1,18 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./assets/logo-dark.svg">
-    <img src="./assets/logo.svg" width="400" alt="komamripy">
+    <img src="./assets/logo.svg" width="480" alt="komamripy">
   </picture>
 </p>
+
+<div align="center">
 
 [![CI](https://github.com/JuliaHealth/komamripy/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JuliaHealth/komamripy/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/komamripy.svg)](https://pypi.org/project/komamripy/)
 [![License](https://img.shields.io/pypi/l/komamripy.svg)](https://pypi.org/project/komamripy/)
 [![Python versions](https://img.shields.io/pypi/pyversions/komamripy.svg)](https://pypi.org/project/komamripy/)
+
+</div>
 
 **Pulseq-compatible, high-performance MRI simulation in Python.**
 
